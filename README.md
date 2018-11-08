@@ -174,3 +174,42 @@ git pull
     ```sh
     git remote set-url origin git@gitlab.arctron.cn:jifeng/git-demo.git
     ```
+
+### 本地两个分支合并操作（一个修改，一个提交）
+
+
+1. 新建工作分支 work
+
+    `git checkout -b work`
+
+2. 在work分支上开发代码,并提交
+```
+    git add content
+    git commit -m "message"
+```
+
+3. 查看commitId
+
+    `git log -p`
+
+4. 切换至master分支
+
+    `git branch master`
+
+5. 查看操作的 hash id
+
+    `git reflog`
+
+6. 合并work代码至master
+
+    `git cherry-pick hash_id || commit_id`
+
+7. 提交代码至远程仓库
+
+    `git push -u origin master`
+
+8. 删除工作分支work
+
+    `git branch -D work`
+
+9. 下次继续新增work分支
