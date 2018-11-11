@@ -197,7 +197,7 @@ git pull
 
 4. 切换至master分支
 
-    `git branch master`
+    `git checkout master`
 
 5. 查看操作的 hash id
 
