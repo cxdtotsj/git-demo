@@ -216,3 +216,22 @@ git pull
     `git branch -D work`
 
 9. 下次继续新增work分支
+
+
+### git双账号配置注意事项
+
+- 新密钥添加到SSH agent中<br>
+    因为默认只读取id_rsa，为了让SSH识别新的私钥，需将其添加到SSH agent中:<br>
+    ```
+    ssh-agent bash
+    ssh-add ~/.ssh/gitlab_id_rsa
+    ```
+
+- 测试git连接
+
+    ```
+    # 测试连接是否成功
+    ssh -T git@github.com
+    # 查看详细的DEBUG输出
+    ssh -v git@github.com
+    ```
