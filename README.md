@@ -220,18 +220,89 @@ git pull
 
 ### git双账号配置注意事项
 
-- 新密钥添加到SSH agent中<br>
-    因为默认只读取id_rsa，为了让SSH识别新的私钥，需将其添加到SSH agent中:<br>
-    ```
-    ssh-agent bash
-    ssh-add ~/.ssh/gitlab_id_rsa
-    ```
+#### 缘起
+两个人，两个github账号，使用同一台电脑，需要同时使用ssh访问github
 
-- 测试git连接
+#### GIT配置
 
-    ```
-    # 测试连接是否成功
-    ssh -T git@github.com
-    # 查看详细的DEBUG输出
-    ssh -v git@github.com
-    ```
+- 生成秘钥
+```
+cd ~/.ssh/
+ssh-keygen -t rsa -C "xxx@xx.com" -f ~/.ssh/id_rsa_xxx
+ssh-keygen -t rsa -C "zzz@zz.com" -f ~/.ssh/id_rsa_zzz
+```
+
+- 网站添加ssh公钥
+打开两个账号的github，分片把生成的公钥复制进去
+
+- ssh添加本地私钥
+```
+ssh-add ~/.ssh/id_rsa_xxx
+ssh-add ~/.ssh/id_rsa_zzz
+```
+如果添加过程中出现如下错误：<font color='red'>执行ssh-add时添加私钥到git中报错Could not open a connection to your authentication agent`</font>, 则执行如下代码:
+```
+eval `ssh-agent`
+```
+然后在执行上面的代码，可以通过 `ssh-add -l` 测试是否添加成功
+
+- 添加ssh配置文件
+
+进入到.ssh目录，执行命令 `touch config` 新建config文件，执行 `vi config` 编辑文件，输入以下内容:
+```
+# A账户
+Host xxx
+HostName github.com
+User git
+IdentityFile ~/.ssh/id_rsa_xxx
+
+# B账户
+Host zzz
+HostName github.com
+User git
+IdentityFile ~/.ssh/id_rsa_zzz
+```
+
+该文件为多个用户配置，每个用户配置包含以下几个配置项：<br>
+    - Host: 仓库网站的别名，随意取
+    - HostName: 仓库网站的域名（PS：IP 地址应该也可以）
+    - User: 仓库网站上的用户名
+    - IdentityFile: 私钥的绝对路径
+
+测试连接是否成功:
+```
+ssh -T git@xxx
+ssh -T git@zzz
+```
+
+#### 仓库配置
+
+- clone仓库
+
+执行克隆仓库的地址，需要复制ssh的地址
+
+```
+git clone git@github.com:xxx/git-demo.git
+```
+
+- 设置仓库本地用户
+
+```
+git config --local user.name "xxx"
+git config --local user.email "xxx@xx.com"
+```
+
+- 修改远程仓库地址
+
+把github远程仓库默认的地址 `git@github.com:xxx/git-demo.git` 进行修改，把其中的github.com替换为在config中配置的Host（仓库网站的别名）:
+```
+git remote set-url origin git@xxx:xxx/git-demo.git
+```
+
+- 测试连接
+
+执行 `git push` 测试远程仓库是否访问成功
+
+- 其他
+
+另外一个用户zzz，进行相同的操作。
