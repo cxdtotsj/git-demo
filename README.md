@@ -306,3 +306,11 @@ git remote set-url origin git@xxx:xxx/git-demo.git
 - 其他
 
 另外一个用户zzz，进行相同的操作。
+
+
+#### HTTP地址免密上传
+
+```
+git remote set-url origin http://username:password@hostname/project.git
+
+```
